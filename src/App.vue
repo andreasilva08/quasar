@@ -163,23 +163,24 @@
 
               <q-card-section class="q-py-sm text-body2">
                 <!-- Visualización de Lista/Chips de Reparación -->
-                <div class="q-mb-xs">
-                  <strong>Reparaciones:</strong>
-                  <div v-if="Array.isArray(servicio.reparacion) && servicio.reparacion.length > 0" class="row q-gutter-xs q-mt-2px">
-                    <q-chip
-                      v-for="(item, idx) in servicio.reparacion"
-                      :key="idx"
-                      dense
-                      size="xs"
-                      color="blue-1"
-                      text-color="blue-10"
-                      class="text-weight-bold"
-                    >
-                      {{ item }}
-                    </q-chip>
-                  </div>
-                  <span v-else class="q-ml-xs">{{ servicio.reparacion }}</span>
-                </div>
+<!-- Visualización de Reparaciones Grande y Destacada -->
+<div class="q-mb-md">
+  <div class="text-subtitle1 text-weight-bolder text-grey-9 q-mb-xs">
+    Reparaciones:
+  </div>
+  <div v-if="Array.isArray(servicio.reparacion) && servicio.reparacion.length > 0" class="row q-gutter-xs">
+    <q-chip
+      v-for="(item, idx) in servicio.reparacion"
+      :key="idx"
+      color="blue-1"
+      text-color="blue-10"
+      class="chip-reparacion-grande text-weight-bold"
+    >
+      {{ item }}
+    </q-chip>
+  </div>
+  <span v-else class="text-body1 text-weight-medium text-grey-9">{{ servicio.reparacion }}</span>
+</div>
 
                 <div class="q-mb-xs"><strong>Técnico:</strong> {{ servicio.tecnico }}</div>
                 <div class="q-mb-xs">
