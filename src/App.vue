@@ -79,7 +79,7 @@
             <div class="col-12 col-md-7">
               <q-input
                 v-model="textoBusqueda"
-                placeholder="Buscar por cliente, marca, modelo o técnico..."
+                placeholder="Buscar por cliente, marca, modelo, técnico o tipo de reparación..."
                 outlined
                 dense
                 clearable
@@ -113,7 +113,7 @@
           </div>
         </q-card>
 
-        <!-- Mensaje si no hay datos o la búsqueda no arroja resultados -->
+        <!-- Mensaje si no hay datos -->
         <div v-if="serviciosFiltrados().length === 0" class="empty-state text-center q-pa-xl">
           <q-icon name="search_off" size="64px" color="grey-5" />
           <div class="text-h6 q-mt-md text-grey-8 text-weight-bold">No se encontraron servicios</div>
@@ -162,18 +162,50 @@
               <q-separator class="q-my-xs opacity-50" />
 
               <q-card-section class="q-py-sm text-body2">
-                <div class="q-mb-xs"><strong>Reparación:</strong> {{ servicio.reparacion }}</div>
+                <!-- Visualización de Lista/Chips de Reparación -->
+                <div class="q-mb-xs">
+                  <strong>Reparaciones:</strong>
+                  <div v-if="Array.isArray(servicio.reparacion) && servicio.reparacion.length > 0" class="row q-gutter-xs q-mt-2px">
+                    <q-chip
+                      v-for="(item, idx) in servicio.reparacion"
+                      :key="idx"
+                      dense
+                      size="xs"
+                      color="blue-1"
+                      text-color="blue-10"
+                      class="text-weight-bold"
+                    >
+                      {{ item }}
+                    </q-chip>
+                  </div>
+                  <span v-else class="q-ml-xs">{{ servicio.reparacion }}</span>
+                </div>
+
                 <div class="q-mb-xs"><strong>Técnico:</strong> {{ servicio.tecnico }}</div>
                 <div class="q-mb-xs text-caption text-grey-7">
                   <q-icon name="event" size="14px" class="q-mr-xs" />
                   {{ servicio.fecha }}
                 </div>
 
+                <!-- Muestra de Precio, Abono y Saldo Pendiente -->
                 <div class="q-mt-sm q-mb-xs">
-                  <strong>Precio:</strong> ${{ servicio.precio ? servicio.precio.toLocaleString() : 0 }}
-                  <span v-if="servicio.estadoPago === 'Abono'" class="text-orange-10 text-weight-bold">
-                    (Abonó: ${{ servicio.valorAbono ? servicio.valorAbono.toLocaleString() : 0 }})
-                  </span>
+                  <div>
+                    <strong>Precio Total:</strong> 
+                    <span class="text-weight-bold text-primary"> ${{ servicio.precio ? servicio.precio.toLocaleString('es-CO') : 0 }} COP</span>
+                  </div>
+
+                  <div v-if="servicio.estadoPago === 'Abono'" class="q-mt-xs bg-orange-1 q-pa-xs rounded-borders border-orange-subtle">
+                    <div class="text-orange-10">
+                      <strong>Abonado:</strong> ${{ servicio.valorAbono ? servicio.valorAbono.toLocaleString('es-CO') : 0 }} COP
+                    </div>
+                    <div class="text-negative text-weight-bolder">
+                      <strong>Falta por pagar:</strong> ${{ calcularSaldoPendiente(servicio).toLocaleString('es-CO') }} COP
+                    </div>
+                  </div>
+
+                  <div v-else-if="servicio.estadoPago === 'Pendiente'" class="text-negative text-weight-bold q-mt-xs">
+                    <strong>Falta por pagar:</strong> ${{ servicio.precio ? servicio.precio.toLocaleString('es-CO') : 0 }} COP
+                  </div>
                 </div>
 
                 <div class="q-mb-xs"><strong>Método de pago:</strong> {{ servicio.metodoPago }}</div>
@@ -199,34 +231,33 @@
                 </div>
               </q-card-section>
 
-              <q-separator class="opacity-50" />
+              <!-- Se oculta la línea divisoria y las acciones si el equipo ya fue entregado -->
+              <template v-if="servicio.estadoEquipo !== 'Entregado'">
+                <q-separator class="opacity-50" />
 
-              <!-- Acciones desactivadas en estado Entregado -->
-              <q-card-actions align="right" class="q-px-md">
-                <q-btn
-                  flat
-                  dense
-                  color="primary"
-                  icon="edit"
-                  label="Editar"
-                  :disable="servicio.estadoEquipo === 'Entregado'"
-                  @click="abrirModalEditar(servicio)"
-                />
-                <q-btn
-                  flat
-                  dense
-                  color="negative"
-                  icon="delete"
-                  label="Eliminar"
-                  :disable="servicio.estadoEquipo === 'Entregado'"
-                  @click="confirmarEliminar(servicio)"
-                />
-              </q-card-actions>
+                <q-card-actions align="right" class="q-px-md">
+                  <q-btn
+                    flat
+                    dense
+                    color="primary"
+                    icon="edit"
+                    label="Editar"
+                    @click="abrirModalEditar(servicio)"
+                  />
+                  <q-btn
+                    flat
+                    dense
+                    color="negative"
+                    icon="delete"
+                    label="Eliminar"
+                    @click="confirmarEliminar(servicio)"
+                  />
+                </q-card-actions>
+              </template>
             </q-card>
           </div>
         </div>
 
-        <!-- Botón flotante FAB para celulares -->
         <q-page-sticky position="bottom-right" :offset="[20, 20]">
           <q-btn fab icon="add" class="btn-gradient shadow-8" @click="abrirModalNuevo" />
         </q-page-sticky>
@@ -260,16 +291,16 @@
           <q-form @submit="guardarServicio" class="form-grid">
             
             <q-input
-  v-model="form.cliente"
-  label="Nombre del cliente *"
-  outlined
-  dense
-  hide-bottom-space
-  :rules="[
-    val => (val && val.trim().length > 0) || 'El nombre es obligatorio',
-    val => /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(val.trim()) || 'Solo se permiten letras y espacios'
-  ]"
-/>
+              v-model="form.cliente"
+              label="Nombre del cliente *"
+              outlined
+              dense
+              hide-bottom-space
+              :rules="[
+                val => (val && val.trim().length > 0) || 'El nombre es obligatorio',
+                val => /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(val.trim()) || 'Solo se permiten letras y espacios'
+              ]"
+            />
 
             <div class="form-row">
               <div class="form-col">
@@ -296,14 +327,17 @@
               </div>
             </div>
 
+            <!-- SELECT DE REPARACIONES MÚLTIPLES -->
             <q-select
               v-model="form.reparacion"
               :options="opcionesReparacion"
-              label="Tipo de reparación *"
+              label="Tipos de reparación *"
               outlined
               dense
+              multiple
+              use-chips
               hide-bottom-space
-              :rules="[val => !!val || 'Requerido']"
+              :rules="[val => (val && val.length > 0) || 'Seleccione al menos un tipo de reparación']"
             />
 
             <q-select
@@ -330,10 +364,12 @@
                 <q-input
                   v-model.number="form.precio"
                   type="number"
-                  label="Precio cobrado ($) *"
+                  label="Precio Total (COP) *"
                   outlined
                   dense
                   hide-bottom-space
+                  prefix="$"
+                  suffix="COP"
                   :rules="[val => (val !== null && val !== '' && val > 0) || 'Monto inválido']"
                 />
               </div>
@@ -362,45 +398,50 @@
                   :rules="[val => !!val || 'Requerido']"
                 />
               </div>
+              
               <div class="form-col" v-if="form.estadoPago === 'Abono'">
                 <q-input
                   v-model.number="form.valorAbono"
                   type="number"
-                  label="Valor del abono ($) *"
+                  label="Valor Abonado (COP) *"
                   outlined
                   dense
                   hide-bottom-space
+                  prefix="$"
+                  suffix="COP"
                   :rules="[
                     val => (val !== null && val !== '' && val > 0) || 'Abono inválido',
-                    val => val <= form.precio || 'Excede el total'
+                    val => val <= form.precio || 'El abono no puede superar el precio total'
                   ]"
                 />
+                <div v-if="form.precio && form.valorAbono > 0" class="text-caption text-negative text-weight-bold q-mt-xs">
+                  Resta por pagar: ${{ (form.precio - form.valorAbono).toLocaleString('es-CO') }} COP
+                </div>
               </div>
             </div>
 
-            <!-- Selector del Estado del Equipo con restricción de pago -->
-<q-select
-  v-model="form.estadoEquipo"
-  :options="opcionesEstadoEquipo"
-  label="Estado del equipo *"
-  outlined
-  dense
-  hide-bottom-space
-  :disable="!esEdicion"
-  :option-disable="opt => opt === 'Entregado' && form.estadoPago !== 'Pagado'"
-  :rules="[val => !!val || 'Requerido']"
->
-  <template v-slot:option="scope">
-    <q-item v-bind="scope.itemProps">
-      <q-item-section>
-        <q-item-label>{{ scope.opt }}</q-item-label>
-        <q-item-label v-if="scope.opt === 'Entregado' && form.estadoPago !== 'Pagado'" caption class="text-red-8">
-          (Requiere estado 'Pagado' para entregar)
-        </q-item-label>
-      </q-item-section>
-    </q-item>
-  </template>
-</q-select>
+            <q-select
+              v-model="form.estadoEquipo"
+              :options="opcionesEstadoEquipo"
+              label="Estado del equipo *"
+              outlined
+              dense
+              hide-bottom-space
+              :disable="!esEdicion"
+              :option-disable="opt => opt === 'Entregado' && form.estadoPago !== 'Pagado'"
+              :rules="[val => !!val || 'Requerido']"
+            >
+              <template v-slot:option="scope">
+                <q-item v-bind="scope.itemProps">
+                  <q-item-section>
+                    <q-item-label>{{ scope.opt }}</q-item-label>
+                    <q-item-label v-if="scope.opt === 'Entregado' && form.estadoPago !== 'Pagado'" caption class="text-red-8">
+                      (Requiere estado 'Pagado' para entregar)
+                    </q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+            </q-select>
 
             <q-input
               v-model="form.observaciones"
@@ -510,7 +551,7 @@ const form = ref({
   cliente: '',
   marca: null,
   modelo: '',
-  reparacion: null,
+  reparacion: [],
   tecnico: null,
   fecha: '',
   precio: null,
@@ -522,16 +563,24 @@ const form = ref({
   observaciones: ''
 })
 
-// Lógica de búsqueda
+// Lógica de búsqueda (Soporta múltiples reparaciones)
 const serviciosFiltrados = () => {
   return servicios.value.filter(servicio => {
     const texto = textoBusqueda.value.toLowerCase().trim()
     
+    let textoReparaciones = ''
+    if (Array.isArray(servicio.reparacion)) {
+      textoReparaciones = servicio.reparacion.join(' ').toLowerCase()
+    } else if (typeof servicio.reparacion === 'string') {
+      textoReparaciones = servicio.reparacion.toLowerCase()
+    }
+
     const coincideTexto = !texto ||
       (servicio.cliente && servicio.cliente.toLowerCase().includes(texto)) ||
       (servicio.marca && servicio.marca.toLowerCase().includes(texto)) ||
       (servicio.modelo && servicio.modelo.toLowerCase().includes(texto)) ||
-      (servicio.tecnico && servicio.tecnico.toLowerCase().includes(texto))
+      (servicio.tecnico && servicio.tecnico.toLowerCase().includes(texto)) ||
+      textoReparaciones.includes(texto)
 
     const coincideEstado = filtroEstado.value === 'Todos' || servicio.estadoEquipo === filtroEstado.value
 
@@ -560,7 +609,7 @@ const abrirModalNuevo = () => {
     cliente: '',
     marca: null,
     modelo: '',
-    reparacion: null,
+    reparacion: [],
     tecnico: null,
     fecha: obtenerFechaHoraActual(),
     precio: null,
@@ -576,19 +625,23 @@ const abrirModalNuevo = () => {
 
 const abrirModalEditar = (servicio) => {
   esEdicion.value = true
-  form.value = { ...servicio }
+  const reparacionArray = Array.isArray(servicio.reparacion) 
+    ? [...servicio.reparacion] 
+    : (servicio.reparacion ? [servicio.reparacion] : [])
+
+  form.value = { 
+    ...servicio,
+    reparacion: reparacionArray
+  }
   modalFormulario.value = true
 }
 
 const guardarServicio = () => {
-  // RESTRICCIÓN CLAVE: No se puede entregar si el pago está en "Abono" o "Pendiente"
   if (form.value.estadoEquipo === 'Entregado' && form.value.estadoPago !== 'Pagado') {
-    // Si intenta entregar sin haber pagado la totalidad, revertimos o bloqueamos
     alert('No se puede entregar un equipo con saldo pendiente. Debe cambiar el estado de pago a "Pagado" primero.')
     return
   }
 
-  // Si pasa a estado Entregado y está Pagado, requerimos la calificación
   if (form.value.estadoEquipo === 'Entregado' && !form.value.calificacion) {
     servicioAEntregar.value = { ...form.value }
     calificacionCliente.value = 0
@@ -601,7 +654,6 @@ const guardarServicio = () => {
 }
 
 const ejecutarGuardado = (datos) => {
-  // Limpia espacios al inicio y al final del nombre del cliente
   if (datos.cliente) {
     datos.cliente = datos.cliente.trim()
   }
@@ -662,5 +714,12 @@ const obtenerColorEstado = (estado) => {
     case 'Entregado': return 'grey-7'
     default: return 'primary'
   }
+}
+
+const calcularSaldoPendiente = (servicio) => {
+  const precio = servicio.precio || 0
+  const abono = servicio.valorAbono || 0
+  const saldo = precio - abono
+  return saldo > 0 ? saldo : 0
 }
 </script>
