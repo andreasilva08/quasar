@@ -163,7 +163,6 @@
 
               <q-card-section class="q-py-sm text-body2">
                 <!-- Visualización de Lista/Chips de Reparación -->
-<!-- Visualización de Reparaciones Grande y Destacada -->
 <div class="q-mb-md">
   <div class="text-subtitle1 text-weight-bolder text-grey-9 q-mb-xs">
     Reparaciones:
@@ -184,10 +183,15 @@
 
                 <div class="q-mb-xs"><strong>Técnico:</strong> {{ servicio.tecnico }}</div>
                 <div class="q-mb-xs">
-  <span class="fecha-destacada">
-    <q-icon name="event" size="16px" color="primary" class="q-mr-xs" />
-    {{ servicio.fecha }}
-  </span>
+  
+  <!-- Muestra de Fecha con etiqueta externa alineada verticalmente -->
+<div class="row items-center q-mb-sm container-fecha">
+  <span class="text-weight-bold text-grey-9 q-mr-sm label-fecha">Fecha:</span>
+  <div class="box-fecha">
+    <q-icon name="event" size="18px" color="primary" class="q-mr-xs" />
+    <span>{{ servicio.fecha }}</span>
+  </div>
+</div>
 </div>
 
                 <!-- Muestra de Precio, Abono y Saldo Pendiente -->
