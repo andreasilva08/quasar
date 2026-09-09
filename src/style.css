@@ -39,7 +39,7 @@
 
 .btn-gradient {
   background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-  color: #ffffff;
+  color: #ffffff !important;
   border-radius: 10px;
   text-transform: none;
   transition: all 0.25s ease;
