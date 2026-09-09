@@ -23,11 +23,11 @@
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: -0.3px;
   line-height: 1.2;
-  font-size: 1.35rem; /* Letra de título un poco más grande */
+  font-size: 1.35rem;
 }
 
 .font-sub {
-  font-size: 0.88rem; /* Aumentado de 0.78rem */
+  font-size: 0.88rem;
   letter-spacing: 0.2px;
 }
 
@@ -42,7 +42,7 @@
 }
 
 .custom-footer .text-caption {
-  font-size: 0.88rem !important; /* Aumentado tamaño de letra en footer */
+  font-size: 0.88rem !important;
 }
 
 /* BOTONES PRINCIPALES */
@@ -52,7 +52,7 @@
   color: #ffffff !important;
   border-radius: 10px;
   text-transform: none;
-  font-size: 0.98rem; /* Un poco más grande para mejor lectura */
+  font-size: 0.98rem;
   transition: all 0.25s ease;
 }
 
@@ -89,7 +89,7 @@
 .border-green { border-top: 4px solid #10b981; }
 
 .stat-label {
-  font-size: 0.88rem; /* Aumentado de 0.78rem */
+  font-size: 0.88rem;
   color: #64748b;
   font-weight: 600;
   text-transform: uppercase;
@@ -97,7 +97,7 @@
 }
 
 .stat-value {
-  font-size: 1.7rem; /* Aumentado de 1.5rem */
+  font-size: 1.7rem;
   font-weight: 800;
   line-height: 1.2;
 }
@@ -125,22 +125,29 @@
   border-color: #cbd5e1;
 }
 
-/* Ajustes de tamaño dentro de las tarjetas */
 .service-card .text-subtitle1 {
-  font-size: 1.15rem; /* Nombre del cliente más prominente */
+  font-size: 1.18rem;
 }
 
 .service-card .text-subtitle2 {
-  font-size: 0.98rem; /* Marca y modelo más legible */
+  font-size: 1rem;
 }
 
 .service-card .text-body2 {
-  font-size: 0.95rem; /* Texto general del cuerpo de la tarjeta */
+  font-size: 0.98rem;
   line-height: 1.45;
 }
 
-.service-card .text-caption {
-  font-size: 0.85rem; /* Fecha y subtítulos */
+/* MEJORA 1: FECHA MÁS VISIBLE */
+.fecha-destacada {
+  font-size: 0.92rem !important;
+  font-weight: 600;
+  color: #334155 !important;
+  background-color: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Bordes laterales marcados */
@@ -148,12 +155,14 @@
 .card-abono { border-left: 6px solid #f59e0b; }
 .card-paid { border-left: 6px solid #10b981; }
 
+/* MEJORA 2: BADGES / ETIQUETAS MÁS GRANDES Y VISIBLES */
 .badge-custom {
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  font-size: 0.82rem; /* Aumentado de 0.72rem */
+  padding: 7px 14px !important;
+  border-radius: 8px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.4px;
+  font-size: 0.9rem !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .empty-state {
@@ -180,20 +189,22 @@
   font-size: 1.25rem;
 }
 
-/* Ajustes de tamaño en Inputs y Selects del formulario */
+/* MEJORA 3: LABELS DEL FORMULARIO UN TRIS MÁS GRANDES */
 :deep(.q-field__label) {
-  font-size: 0.95rem;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  color: #334155 !important;
 }
 
 :deep(.q-field__native), :deep(.q-field__prefix), :deep(.q-field__suffix) {
-  font-size: 0.98rem;
+  font-size: 1rem;
 }
 
 :deep(.q-chip__content) {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
-/* Grid del Formulario para espaciado exacto */
+/* Grid del Formulario */
 .form-grid {
   display: flex;
   flex-direction: column;
@@ -209,7 +220,6 @@
   flex: 1;
 }
 
-/* Elimina saltos desproporcionados de las reglas de Quasar */
 :deep(.q-field--with-bottom) {
   padding-bottom: 0px;
 }
@@ -218,7 +228,7 @@
   position: relative;
   padding-top: 2px;
   padding-bottom: 2px;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
 :deep(.q-field--outlined .q-field__control) {
@@ -237,6 +247,6 @@
 }
 
 .text-orange-10 {
-    color: #e65100 !important;
-    font-weight: 800;
+  color: #e65100 !important;
+  font-weight: 800;
 }
