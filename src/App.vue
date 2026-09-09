@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="app-bg">
     
-    <!-- HEADER-->
+    <!-- HEADER -->
     <q-header class="custom-header">
       <q-toolbar class="q-py-md max-width-container">
         <div class="row items-center q-gutter-x-sm">
@@ -16,7 +16,7 @@
 
         <q-space />
 
-        <!-- Botón Agregar  -->
+        <!-- Botón Agregar -->
         <q-btn
           icon="add_circle"
           label="Nuevo Servicio"
@@ -162,37 +162,35 @@
               <q-separator class="q-my-xs opacity-50" />
 
               <q-card-section class="q-py-sm text-body2">
-                <!-- Visualización de Lista/Chips de Reparación -->
-<div class="q-mb-md">
-  <div class="text-subtitle1 text-weight-bolder text-grey-9 q-mb-xs">
-    Reparaciones:
-  </div>
-  <div v-if="Array.isArray(servicio.reparacion) && servicio.reparacion.length > 0" class="row q-gutter-xs">
-    <q-chip
-      v-for="(item, idx) in servicio.reparacion"
-      :key="idx"
-      color="blue-1"
-      text-color="blue-10"
-      class="chip-reparacion-grande text-weight-bold"
-    >
-      {{ item }}
-    </q-chip>
-  </div>
-  <span v-else class="text-body1 text-weight-medium text-grey-9">{{ servicio.reparacion }}</span>
-</div>
+                <!-- Visualización de Reparaciones Grande y Destacada -->
+                <div class="q-mb-md">
+                  <div class="text-subtitle1 text-weight-bolder text-grey-9 q-mb-xs">
+                    Reparaciones:
+                  </div>
+                  <div v-if="Array.isArray(servicio.reparacion) && servicio.reparacion.length > 0" class="row q-gutter-xs">
+                    <q-chip
+                      v-for="(item, idx) in servicio.reparacion"
+                      :key="idx"
+                      color="blue-1"
+                      text-color="blue-10"
+                      class="chip-reparacion-grande text-weight-bold"
+                    >
+                      {{ item }}
+                    </q-chip>
+                  </div>
+                  <span v-else class="text-body1 text-weight-medium text-grey-9">{{ servicio.reparacion }}</span>
+                </div>
 
                 <div class="q-mb-xs"><strong>Técnico:</strong> {{ servicio.tecnico }}</div>
-                <div class="q-mb-xs">
-  
-  <!-- Muestra de Fecha con etiqueta externa alineada verticalmente -->
-<div class="row items-center q-mb-sm container-fecha">
-  <span class="text-weight-bold text-grey-9 q-mr-sm label-fecha">Fecha:</span>
-  <div class="box-fecha">
-    <q-icon name="event" size="18px" color="primary" class="q-mr-xs" />
-    <span>{{ servicio.fecha }}</span>
-  </div>
-</div>
-</div>
+                
+                <!-- Muestra de Fecha con etiqueta externa alineada verticalmente -->
+                <div class="container-fecha q-mb-sm">
+                  <span class="label-fecha text-weight-bold text-grey-9 q-mr-sm">Fecha:</span>
+                  <div class="box-fecha">
+                    <q-icon name="event" size="18px" color="primary" class="q-mr-xs" />
+                    <span>{{ servicio.fecha }}</span>
+                  </div>
+                </div>
 
                 <!-- Muestra de Precio, Abono y Saldo Pendiente -->
                 <div class="q-mt-sm q-mb-xs">
@@ -228,9 +226,9 @@
 
                 <!-- Calificación si ya está entregado -->
                 <div v-if="servicio.estadoEquipo === 'Entregado' && servicio.calificacion" class="q-mt-sm row items-center bg-grey-2 q-pa-sm rounded-borders">
-  <span class="text-subtitle2 text-weight-bold text-grey-8 q-mr-sm">Calificación:</span>
-  <q-rating v-model="servicio.calificacion" readonly size="1.6em" color="amber" />
-</div>
+                  <span class="text-subtitle2 text-weight-bold text-grey-8 q-mr-sm">Calificación:</span>
+                  <q-rating v-model="servicio.calificacion" readonly size="1.6em" color="amber" />
+                </div>
 
                 <!-- Observaciones -->
                 <div v-if="servicio.observaciones" class="q-mt-xs text-caption text-grey-8 italic bg-amber-1 q-pa-xs rounded-borders">
@@ -366,18 +364,21 @@
               readonly
             />
 
+            <!-- PRECIO CON MÁSCARA DE PUNTOS DE MILES -->
             <div class="form-row">
               <div class="form-col">
                 <q-input
-                  v-model.number="form.precio"
-                  type="number"
+                  v-model="precioFormateado"
                   label="Precio Total (COP) *"
                   outlined
                   dense
                   hide-bottom-space
                   prefix="$"
                   suffix="COP"
-                  :rules="[val => (val !== null && val !== '' && val > 0) || 'Monto inválido']"
+                  mask="#.###.###.###"
+                  reverse-fill-mask
+                  @update:model-value="actualizarPrecioReal"
+                  :rules="[val => (form.precio && form.precio > 0) || 'Monto inválido']"
                 />
               </div>
               <div class="form-col">
@@ -393,6 +394,7 @@
               </div>
             </div>
 
+            <!-- ABONO CON MÁSCARA DE PUNTOS DE MILES -->
             <div class="form-row">
               <div class="form-col">
                 <q-select
@@ -408,17 +410,19 @@
               
               <div class="form-col" v-if="form.estadoPago === 'Abono'">
                 <q-input
-                  v-model.number="form.valorAbono"
-                  type="number"
+                  v-model="abonoFormateado"
                   label="Valor Abonado (COP) *"
                   outlined
                   dense
                   hide-bottom-space
                   prefix="$"
                   suffix="COP"
+                  mask="#.###.###.###"
+                  reverse-fill-mask
+                  @update:model-value="actualizarAbonoReal"
                   :rules="[
-                    val => (val !== null && val !== '' && val > 0) || 'Abono inválido',
-                    val => val <= form.precio || 'El abono no puede superar el precio total'
+                    val => (form.valorAbono && form.valorAbono > 0) || 'Abono inválido',
+                    val => form.valorAbono <= form.precio || 'El abono no puede superar el precio total'
                   ]"
                 />
                 <div v-if="form.precio && form.valorAbono > 0" class="text-caption text-negative text-weight-bold q-mt-xs">
@@ -552,6 +556,10 @@ const idServicioEliminar = ref(null)
 const servicioAEntregar = ref(null)
 const calificacionCliente = ref(0)
 
+// Variables de formato visual para los puntos de miles
+const precioFormateado = ref('')
+const abonoFormateado = ref('')
+
 // Formulario
 const form = ref({
   id: null,
@@ -569,6 +577,25 @@ const form = ref({
   calificacion: null,
   observaciones: ''
 })
+
+// Funciones para sincronizar el formato visual de los puntos con el número real
+const actualizarPrecioReal = (val) => {
+  if (!val) {
+    form.value.precio = null
+    return
+  }
+  const numeroLimpio = val.toString().replace(/\./g, '')
+  form.value.precio = Number(numeroLimpio)
+}
+
+const actualizarAbonoReal = (val) => {
+  if (!val) {
+    form.value.valorAbono = 0
+    return
+  }
+  const numeroLimpio = val.toString().replace(/\./g, '')
+  form.value.valorAbono = Number(numeroLimpio)
+}
 
 // Lógica de búsqueda (Soporta múltiples reparaciones)
 const serviciosFiltrados = () => {
@@ -611,6 +638,8 @@ const obtenerFechaHoraActual = () => {
 
 const abrirModalNuevo = () => {
   esEdicion.value = false
+  precioFormateado.value = ''
+  abonoFormateado.value = ''
   form.value = {
     id: Date.now(),
     cliente: '',
@@ -632,6 +661,11 @@ const abrirModalNuevo = () => {
 
 const abrirModalEditar = (servicio) => {
   esEdicion.value = true
+  
+  // Carga los valores formateados con puntos
+  precioFormateado.value = servicio.precio ? servicio.precio.toLocaleString('es-CO') : ''
+  abonoFormateado.value = servicio.valorAbono ? servicio.valorAbono.toLocaleString('es-CO') : ''
+
   const reparacionArray = Array.isArray(servicio.reparacion) 
     ? [...servicio.reparacion] 
     : (servicio.reparacion ? [servicio.reparacion] : [])
