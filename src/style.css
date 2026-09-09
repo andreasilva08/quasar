@@ -1,0 +1,185 @@
+.app-bg {
+  background: #f8fafc;
+}
+
+.max-width-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* HEADER Y FOOTER */
+
+.custom-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.15);
+}
+
+.brand-title {
+  font-family: system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.font-sub {
+  font-size: 0.78rem;
+  letter-spacing: 0.2px;
+}
+
+.icon-avatar {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.custom-footer {
+  background: #0f172a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* BOTONES PRINCIPALES */
+
+.btn-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff;
+  border-radius: 10px;
+  text-transform: none;
+  transition: all 0.25s ease;
+}
+
+.btn-gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35);
+}
+
+.btn-reset {
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  text-transform: none;
+}
+
+/* METRICAS Y BARRA DE FILTROS */
+
+.stat-card {
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+}
+
+.border-blue { border-top: 4px solid #2563eb; }
+.border-amber { border-top: 4px solid #f59e0b; }
+.border-red { border-top: 4px solid #ef4444; }
+.border-green { border-top: 4px solid #10b981; }
+
+.stat-label {
+  font-size: 0.78rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.filter-card {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+/* TARJETAS DE SERVICIOS */
+
+.service-card {
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  border-color: #cbd5e1;
+}
+
+/* Bordes laterales marcados */
+.card-pending { border-left: 6px solid #ef4444; }
+.card-abono { border-left: 6px solid #f59e0b; }
+.card-paid { border-left: 6px solid #10b981; }
+
+.badge-custom {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  font-size: 0.72rem;
+}
+
+.empty-state {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+}
+
+/* FORMULARIO Y MODAL UNIFORME */
+
+.modal-card {
+  width: 520px;
+  max-width: 95vw;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  padding: 16px 24px;
+}
+
+/* Grid del Formulario para espaciado exacto */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-col {
+  flex: 1;
+}
+
+/* Elimina saltos desproporcionados de las reglas de Quasar */
+:deep(.q-field--with-bottom) {
+  padding-bottom: 0px;
+}
+
+:deep(.q-field__bottom) {
+  position: relative;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+:deep(.q-field--outlined .q-field__control) {
+  border-radius: 10px;
+}
+
+.italic {
+  font-style: italic;
+}
+.opacity-50 {
+  opacity: 0.5;
+}
