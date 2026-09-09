@@ -260,13 +260,16 @@
           <q-form @submit="guardarServicio" class="form-grid">
             
             <q-input
-              v-model="form.cliente"
-              label="Nombre del cliente *"
-              outlined
-              dense
-              hide-bottom-space
-              :rules="[val => !!val || 'Requerido']"
-            />
+  v-model="form.cliente"
+  label="Nombre del cliente *"
+  outlined
+  dense
+  hide-bottom-space
+  :rules="[
+    val => (val && val.trim().length > 0) || 'El nombre es obligatorio',
+    val => /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(val.trim()) || 'Solo se permiten letras y espacios'
+  ]"
+/>
 
             <div class="form-row">
               <div class="form-col">
@@ -375,16 +378,29 @@
               </div>
             </div>
 
-            <q-select
-              v-model="form.estadoEquipo"
-              :options="opcionesEstadoEquipo"
-              label="Estado del equipo *"
-              outlined
-              dense
-              hide-bottom-space
-              :disable="!esEdicion"
-              :rules="[val => !!val || 'Requerido']"
-            />
+            <!-- Selector del Estado del Equipo con restricción de pago -->
+<q-select
+  v-model="form.estadoEquipo"
+  :options="opcionesEstadoEquipo"
+  label="Estado del equipo *"
+  outlined
+  dense
+  hide-bottom-space
+  :disable="!esEdicion"
+  :option-disable="opt => opt === 'Entregado' && form.estadoPago !== 'Pagado'"
+  :rules="[val => !!val || 'Requerido']"
+>
+  <template v-slot:option="scope">
+    <q-item v-bind="scope.itemProps">
+      <q-item-section>
+        <q-item-label>{{ scope.opt }}</q-item-label>
+        <q-item-label v-if="scope.opt === 'Entregado' && form.estadoPago !== 'Pagado'" caption class="text-red-8">
+          (Requiere estado 'Pagado' para entregar)
+        </q-item-label>
+      </q-item-section>
+    </q-item>
+  </template>
+</q-select>
 
             <q-input
               v-model="form.observaciones"
@@ -565,6 +581,14 @@ const abrirModalEditar = (servicio) => {
 }
 
 const guardarServicio = () => {
+  // RESTRICCIÓN CLAVE: No se puede entregar si el pago está en "Abono" o "Pendiente"
+  if (form.value.estadoEquipo === 'Entregado' && form.value.estadoPago !== 'Pagado') {
+    // Si intenta entregar sin haber pagado la totalidad, revertimos o bloqueamos
+    alert('No se puede entregar un equipo con saldo pendiente. Debe cambiar el estado de pago a "Pagado" primero.')
+    return
+  }
+
+  // Si pasa a estado Entregado y está Pagado, requerimos la calificación
   if (form.value.estadoEquipo === 'Entregado' && !form.value.calificacion) {
     servicioAEntregar.value = { ...form.value }
     calificacionCliente.value = 0
@@ -577,6 +601,11 @@ const guardarServicio = () => {
 }
 
 const ejecutarGuardado = (datos) => {
+  // Limpia espacios al inicio y al final del nombre del cliente
+  if (datos.cliente) {
+    datos.cliente = datos.cliente.trim()
+  }
+
   if (datos.estadoPago !== 'Abono') {
     datos.valorAbono = 0
   }
