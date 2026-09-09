@@ -182,10 +182,12 @@
                 </div>
 
                 <div class="q-mb-xs"><strong>Técnico:</strong> {{ servicio.tecnico }}</div>
-                <div class="q-mb-xs text-caption text-grey-7">
-                  <q-icon name="event" size="14px" class="q-mr-xs" />
-                  {{ servicio.fecha }}
-                </div>
+                <div class="q-mb-xs">
+  <span class="fecha-destacada">
+    <q-icon name="event" size="16px" color="primary" class="q-mr-xs" />
+    {{ servicio.fecha }}
+  </span>
+</div>
 
                 <!-- Muestra de Precio, Abono y Saldo Pendiente -->
                 <div class="q-mt-sm q-mb-xs">
@@ -220,10 +222,10 @@
                 </div>
 
                 <!-- Calificación si ya está entregado -->
-                <div v-if="servicio.estadoEquipo === 'Entregado' && servicio.calificacion" class="q-mt-sm row items-center bg-grey-2 q-pa-xs rounded-borders">
-                  <span class="text-caption text-grey-8 q-mr-xs">Calificación:</span>
-                  <q-rating v-model="servicio.calificacion" readonly size="1.2em" color="amber" />
-                </div>
+                <div v-if="servicio.estadoEquipo === 'Entregado' && servicio.calificacion" class="q-mt-sm row items-center bg-grey-2 q-pa-sm rounded-borders">
+  <span class="text-subtitle2 text-weight-bold text-grey-8 q-mr-sm">Calificación:</span>
+  <q-rating v-model="servicio.calificacion" readonly size="1.6em" color="amber" />
+</div>
 
                 <!-- Observaciones -->
                 <div v-if="servicio.observaciones" class="q-mt-xs text-caption text-grey-8 italic bg-amber-1 q-pa-xs rounded-borders">
