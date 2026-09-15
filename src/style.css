@@ -1,5 +1,5 @@
 :deep(.q-layout) {
-  font-size: 15px;
+  font-size: 17px; /* Aumentado de 15px */
 }
 
 /* Fondo global */
@@ -23,11 +23,11 @@
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: -0.3px;
   line-height: 1.2;
-  font-size: 1.35rem;
+  font-size: 1.55rem; /* Aumentado de 1.35rem */
 }
 
 .font-sub {
-  font-size: 0.88rem;
+  font-size: 1rem; /* Aumentado de 0.88rem */
   letter-spacing: 0.2px;
 }
 
@@ -42,7 +42,7 @@
 }
 
 .custom-footer .text-caption {
-  font-size: 0.88rem !important;
+  font-size: 0.98rem !important; /* Aumentado de 0.88rem */
 }
 
 /* BOTONES PRINCIPALES */
@@ -52,7 +52,7 @@
   color: #ffffff !important;
   border-radius: 10px;
   text-transform: none;
-  font-size: 0.98rem;
+  font-size: 1.08rem; /* Aumentado de 0.98rem */
   transition: all 0.25s ease;
 }
 
@@ -65,7 +65,7 @@
   border-radius: 8px;
   border: 1px solid #e2e8f0;
   text-transform: none;
-  font-size: 0.92rem;
+  font-size: 1.02rem; /* Aumentado de 0.92rem */
 }
 
 /* METRICAS Y BARRA DE FILTROS */
@@ -89,7 +89,7 @@
 .border-green { border-top: 4px solid #10b981; }
 
 .stat-label {
-  font-size: 0.88rem;
+  font-size: 0.98rem; /* Aumentado de 0.88rem */
   color: #64748b;
   font-weight: 600;
   text-transform: uppercase;
@@ -97,7 +97,7 @@
 }
 
 .stat-value {
-  font-size: 1.7rem;
+  font-size: 1.95rem; /* Aumentado de 1.7rem */
   font-weight: 800;
   line-height: 1.2;
 }
@@ -126,15 +126,15 @@
 }
 
 .service-card .text-subtitle1 {
-  font-size: 1.18rem;
+  font-size: 1.3rem; /* Aumentado de 1.18rem */
 }
 
 .service-card .text-subtitle2 {
-  font-size: 1rem;
+  font-size: 1.12rem; /* Aumentado de 1rem */
 }
 
 .service-card .text-body2 {
-  font-size: 0.98rem;
+  font-size: 1.08rem; /* Aumentado de 0.98rem */
   line-height: 1.45;
 }
 
@@ -145,14 +145,14 @@
 }
 
 .label-fecha {
-  font-size: 0.98rem;
+  font-size: 1.08rem; /* Aumentado de 0.98rem */
   line-height: 1; 
 }
 
 .box-fecha {
   display: inline-flex;
   align-items: center; 
-  font-size: 0.95rem;
+  font-size: 1.05rem; /* Aumentado de 0.95rem */
   font-weight: 600;
   color: #1e293b;
   background-color: #f1f5f9;
@@ -161,19 +161,25 @@
   border-radius: 8px;
   line-height: 1;
 }
+
 /* Bordes laterales marcados */
 .card-pending { border-left: 6px solid #ef4444; }
 .card-abono { border-left: 6px solid #f59e0b; }
 .card-paid { border-left: 6px solid #10b981; }
 
-/* MEJORA 2: BADGES / ETIQUETAS MÁS GRANDES Y VISIBLES */
+/* BADGES / ETIQUETAS */
 .badge-custom {
-  padding: 7px 14px !important;
+  padding: 8px 16px !important;
   border-radius: 8px !important;
   font-weight: 800 !important;
   letter-spacing: 0.4px;
-  font-size: 0.9rem !important;
+  font-size: 1rem !important; /* Aumentado de 0.9rem */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.chip-reparacion-grande {
+  font-size: 0.98rem !important; /* Aumentado para los chips de reparaciones */
+  padding: 4px 8px;
 }
 
 .empty-state {
@@ -182,10 +188,10 @@
   border: 1px solid #e2e8f0;
 }
 
-/* FORMULARIO Y MODAL UNIFORME */
+/* FORMULARIO Y MODAL */
 
 .modal-card {
-  width: 540px;
+  width: 580px;
   max-width: 95vw;
   border-radius: 20px;
   overflow: hidden;
@@ -197,22 +203,25 @@
 }
 
 .modal-header .text-h6 {
-  font-size: 1.25rem;
+  font-size: 1.4rem; /* Aumentado de 1.25rem */
 }
 
-/* MEJORA 3: LABELS DEL FORMULARIO UN TRIS MÁS GRANDES */
+/* LABELS E INPUTS DEL FORMULARIO */
 :deep(.q-field__label) {
-  font-size: 1.05rem !important;
+  font-size: 1.15rem !important; /* Aumentado de 1.05rem */
   font-weight: 600 !important;
   color: #334155 !important;
 }
 
-:deep(.q-field__native), :deep(.q-field__prefix), :deep(.q-field__suffix) {
-  font-size: 1rem;
+:deep(.q-field__native), 
+:deep(.q-field__prefix), 
+:deep(.q-field__suffix), 
+:deep(.q-field__input) {
+  font-size: 1.1rem !important; /* Aumentado de 1rem */
 }
 
 :deep(.q-chip__content) {
-  font-size: 0.85rem;
+  font-size: 0.95rem; /* Aumentado de 0.85rem */
 }
 
 /* Grid del Formulario */
@@ -239,7 +248,7 @@
   position: relative;
   padding-top: 2px;
   padding-bottom: 2px;
-  font-size: 0.85rem;
+  font-size: 0.95rem; /* Aumentado de 0.85rem */
 }
 
 :deep(.q-field--outlined .q-field__control) {
@@ -249,6 +258,7 @@
 .italic {
   font-style: italic;
 }
+
 .opacity-50 {
   opacity: 0.5;
 }
