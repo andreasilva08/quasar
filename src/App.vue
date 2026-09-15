@@ -114,7 +114,7 @@
         </q-card>
 
         <!-- Mensaje si no hay datos -->
-        <div v-if="serviciosFiltrados().length === 0" class="empty-state text-center q-pa-xl">
+        <div v-if="serviciosFiltrados.length === 0" class="empty-state text-center q-pa-xl">
           <q-icon name="search_off" size="64px" color="grey-5" />
           <div class="text-h6 q-mt-md text-grey-8 text-weight-bold">No se encontraron servicios</div>
           <p class="text-grey-6">
@@ -125,7 +125,7 @@
         <!-- LISTADO DE TARJETAS DE SERVICIOS -->
         <div class="row q-col-gutter-md">
           <div
-            v-for="servicio in serviciosFiltrados()"
+            v-for="servicio in serviciosFiltrados"
             :key="servicio.id"
             class="col-12 col-sm-6 col-md-4"
           >
@@ -162,7 +162,7 @@
               <q-separator class="q-my-xs opacity-50" />
 
               <q-card-section class="q-py-sm text-body2">
-                <!-- Visualización de Reparaciones Grande y Destacada -->
+                <!-- Visualización de Reparaciones -->
                 <div class="q-mb-md">
                   <div class="text-subtitle1 text-weight-bolder text-grey-9 q-mb-xs">
                     Reparaciones:
@@ -183,7 +183,7 @@
 
                 <div class="q-mb-xs"><strong>Técnico:</strong> {{ servicio.tecnico }}</div>
                 
-                <!-- Muestra de Fecha con etiqueta externa alineada verticalmente -->
+                <!-- Muestra de Fecha -->
                 <div class="container-fecha q-mb-sm">
                   <span class="label-fecha text-weight-bold text-grey-9 q-mr-sm">Fecha:</span>
                   <div class="box-fecha">
@@ -236,7 +236,6 @@
                 </div>
               </q-card-section>
 
-              <!-- Se oculta la línea divisoria y las acciones si el equipo ya fue entregado -->
               <template v-if="servicio.estadoEquipo !== 'Entregado'">
                 <q-separator class="opacity-50" />
 
@@ -332,6 +331,18 @@
               </div>
             </div>
 
+            <!-- CAMPO CONDICIONAL PARA MARCA 'OTRA' -->
+            <q-input
+              v-if="form.marca === 'Otra'"
+              v-model="otraMarca"
+              label="Especifique la Marca *"
+              outlined
+              dense
+              hide-bottom-space
+              class="q-mt-xs bg-blue-1 rounded-borders"
+              :rules="[val => (val && val.trim().length > 0) || 'Escriba el nombre de la marca']"
+            />
+
             <!-- SELECT DE REPARACIONES MÚLTIPLES -->
             <q-select
               v-model="form.reparacion"
@@ -343,6 +354,18 @@
               use-chips
               hide-bottom-space
               :rules="[val => (val && val.length > 0) || 'Seleccione al menos un tipo de reparación']"
+            />
+
+            <!-- CAMPO CONDICIONAL PARA REPARACIÓN 'OTROS' -->
+            <q-input
+              v-if="esReparacionOtrosSeleccionada"
+              v-model="otraReparacion"
+              label="Especifique otra(s) reparación(es) *"
+              outlined
+              dense
+              hide-bottom-space
+              class="q-mt-xs bg-blue-1 rounded-borders"
+              :rules="[val => (val && val.trim().length > 0) || 'Escriba el detalle de la reparación']"
             />
 
             <q-select
@@ -364,7 +387,7 @@
               readonly
             />
 
-            <!-- PRECIO CON MÁSCARA DE PUNTOS DE MILES -->
+            <!-- PRECIO CON MÁSCARA -->
             <div class="form-row">
               <div class="form-col">
                 <q-input
@@ -394,7 +417,7 @@
               </div>
             </div>
 
-            <!-- ABONO CON MÁSCARA DE PUNTOS DE MILES -->
+            <!-- ABONO CON MÁSCARA -->
             <div class="form-row">
               <div class="form-col">
                 <q-select
@@ -472,7 +495,7 @@
       </q-card>
     </q-dialog>
 
-    <!-- MODAL CALIFICACIÓN AL ENTREGAR -->
+    <!-- MODAL CALIFICACIÓN -->
     <q-dialog v-model="modalCalificacion" persistent>
       <q-card style="width: 380px; max-width: 90vw; border-radius: 16px;">
         <q-card-section class="bg-teal text-white">
@@ -499,7 +522,7 @@
       </q-card>
     </q-dialog>
 
-    <!-- MODAL CONFIRMACIÓN DE ELIMINACIÓN -->
+    <!-- MODAL CONFIRMACIÓN ELIMINACIÓN -->
     <q-dialog v-model="modalEliminar" persistent>
       <q-card style="border-radius: 16px;">
         <q-card-section class="row items-center q-pa-md">
@@ -518,8 +541,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useLocalStorage } from '@vueuse/core'
+import { useQuasar } from 'quasar'
+
+const $q = useQuasar()
 
 // Persistencia local
 const servicios = useLocalStorage('taller_efrain_servicios', [])
@@ -556,7 +582,11 @@ const idServicioEliminar = ref(null)
 const servicioAEntregar = ref(null)
 const calificacionCliente = ref(0)
 
-// Variables de formato visual para los puntos de miles
+// Campos personalizados adicionales
+const otraMarca = ref('')
+const otraReparacion = ref('')
+
+// Formatos visuales para los puntos de miles
 const precioFormateado = ref('')
 const abonoFormateado = ref('')
 
@@ -578,7 +608,20 @@ const form = ref({
   observaciones: ''
 })
 
-// Funciones para sincronizar el formato visual de los puntos con el número real
+// Evaluación para mostrar caja de texto en reparaciones
+const esReparacionOtrosSeleccionada = computed(() => {
+  return Array.isArray(form.value.reparacion) && form.value.reparacion.includes('Otros')
+})
+
+// Observador para limpiar abono si se cambia de estado de pago
+watch(() => form.value.estadoPago, (nuevoEstado) => {
+  if (nuevoEstado !== 'Abono') {
+    form.value.valorAbono = 0
+    abonoFormateado.value = ''
+  }
+})
+
+// Sincronización de montos con formato
 const actualizarPrecioReal = (val) => {
   if (!val) {
     form.value.precio = null
@@ -597,8 +640,8 @@ const actualizarAbonoReal = (val) => {
   form.value.valorAbono = Number(numeroLimpio)
 }
 
-// Lógica de búsqueda (Soporta múltiples reparaciones)
-const serviciosFiltrados = () => {
+// Búsqueda y filtrado computado
+const serviciosFiltrados = computed(() => {
   return servicios.value.filter(servicio => {
     const texto = textoBusqueda.value.toLowerCase().trim()
     
@@ -620,14 +663,13 @@ const serviciosFiltrados = () => {
 
     return coincideTexto && coincideEstado
   })
-}
+})
 
 const limpiarFiltros = () => {
   textoBusqueda.value = ''
   filtroEstado.value = 'Todos'
 }
 
-// Fecha y hora automatizada en formato es-CO
 const obtenerFechaHoraActual = () => {
   const ahora = new Date()
   return ahora.toLocaleString('es-CO', {
@@ -636,10 +678,11 @@ const obtenerFechaHoraActual = () => {
   })
 }
 
-const abrirModalNuevo = () => {
-  esEdicion.value = false
+const resetForm = () => {
   precioFormateado.value = ''
   abonoFormateado.value = ''
+  otraMarca.value = ''
+  otraReparacion.value = ''
   form.value = {
     id: Date.now(),
     cliente: '',
@@ -656,53 +699,104 @@ const abrirModalNuevo = () => {
     calificacion: null,
     observaciones: ''
   }
+}
+
+const abrirModalNuevo = () => {
+  esEdicion.value = false
+  resetForm()
   modalFormulario.value = true
 }
 
 const abrirModalEditar = (servicio) => {
   esEdicion.value = true
-  
-  // Carga los valores formateados con puntos
+  resetForm()
+
   precioFormateado.value = servicio.precio ? servicio.precio.toLocaleString('es-CO') : ''
   abonoFormateado.value = servicio.valorAbono ? servicio.valorAbono.toLocaleString('es-CO') : ''
 
-  const reparacionArray = Array.isArray(servicio.reparacion) 
-    ? [...servicio.reparacion] 
-    : (servicio.reparacion ? [servicio.reparacion] : [])
+  // Lógica de procesamiento de Marca personalizada
+  let marcaAAsignar = servicio.marca
+  if (servicio.marca && !opcionesMarcas.includes(servicio.marca)) {
+    marcaAAsignar = 'Otra'
+    otraMarca.value = servicio.marca
+  }
+
+  // Lógica de procesamiento de Reparaciones personalizadas
+  let reparacionesAAsignar = []
+  if (Array.isArray(servicio.reparacion)) {
+    reparacionesAAsignar = [...servicio.reparacion]
+  } else if (servicio.reparacion) {
+    reparacionesAAsignar = [servicio.reparacion]
+  }
+
+  const reparacionesExtra = reparacionesAAsignar.filter(r => !opcionesReparacion.includes(r))
+  if (reparacionesExtra.length > 0) {
+    reparacionesAAsignar = reparacionesAAsignar.filter(r => opcionesReparacion.includes(r))
+    if (!reparacionesAAsignar.includes('Otros')) {
+      reparacionesAAsignar.push('Otros')
+    }
+    otraReparacion.value = reparacionesExtra.join(', ')
+  }
 
   form.value = { 
     ...servicio,
-    reparacion: reparacionArray
+    marca: marcaAAsignar,
+    reparacion: reparacionesAAsignar
   }
+
   modalFormulario.value = true
 }
 
 const guardarServicio = () => {
   if (form.value.estadoEquipo === 'Entregado' && form.value.estadoPago !== 'Pagado') {
-    alert('No se puede entregar un equipo con saldo pendiente. Debe cambiar el estado de pago a "Pagado" primero.')
+    $q.notify({
+      type: 'warning',
+      message: 'No se puede entregar un equipo con saldo pendiente. Debe cambiar el estado de pago a "Pagado" primero.'
+    })
     return
   }
 
   if (form.value.estadoEquipo === 'Entregado' && !form.value.calificacion) {
-    servicioAEntregar.value = { ...form.value }
+    servicioAEntregar.value = preparardatosParaGuardar()
     calificacionCliente.value = 0
     modalFormulario.value = false
     modalCalificacion.value = true
     return
   }
 
-  ejecutarGuardado(form.value)
+  ejecutarGuardado(preparardatosParaGuardar())
 }
 
-const ejecutarGuardado = (datos) => {
+const preparardatosParaGuardar = () => {
+  const datos = JSON.parse(JSON.stringify(form.value))
+
   if (datos.cliente) {
     datos.cliente = datos.cliente.trim()
+  }
+
+  // Reemplazar la marca si seleccionó "Otra"
+  if (datos.marca === 'Otra') {
+    datos.marca = otraMarca.value.trim()
+  }
+
+  // Reemplazar/Añadir opción personalizada en "Otros"
+  if (Array.isArray(datos.reparacion)) {
+    datos.reparacion = datos.reparacion.map(r => {
+      if (r === 'Otros') {
+        return otraReparacion.value.trim()
+      }
+      return r
+    })
   }
 
   if (datos.estadoPago !== 'Abono') {
     datos.valorAbono = 0
   }
 
+  return datos
+}
+
+const ejecutarGuardado = (datos) => {
   if (esEdicion.value) {
     const index = servicios.value.findIndex(s => s.id === datos.id)
     if (index !== -1) {
@@ -711,6 +805,12 @@ const ejecutarGuardado = (datos) => {
   } else {
     servicios.value.push({ ...datos })
   }
+  
+  $q.notify({
+    type: 'positive',
+    message: esEdicion.value ? 'Registro actualizado correctamente' : 'Registro creado exitosamente'
+  })
+
   modalFormulario.value = false
 }
 
@@ -735,6 +835,10 @@ const eliminarServicioConfirmado = () => {
   servicios.value = servicios.value.filter(s => s.id !== idServicioEliminar.value)
   modalEliminar.value = false
   idServicioEliminar.value = null
+  $q.notify({
+    type: 'info',
+    message: 'Registro eliminado'
+  })
 }
 
 const obtenerIconoEstado = (estado) => {
